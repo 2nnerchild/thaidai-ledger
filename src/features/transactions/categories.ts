@@ -29,7 +29,6 @@ export const PURCHASE_CATEGORIES = [
 export type SaleCategory = (typeof SALE_CATEGORIES)[number];
 export type PurchaseCategory = (typeof PURCHASE_CATEGORIES)[number];
 
-// 아티스트명 입력이 활성화되는 음악 창작 카테고리
 export const ARTIST_CATEGORIES: readonly string[] = [
   '작곡료',
   '프로듀싱료',
@@ -44,10 +43,7 @@ export function requiresArtistName(category: string): boolean {
   return ARTIST_CATEGORIES.includes(category);
 }
 
-/** [아티스트명] 거래처명 형식으로 내역 제목을 조합 */
 export function formatTransactionTitle(party: string, artistName?: string): string {
-  if (artistName && artistName.trim()) {
-    return `[${artistName.trim()}] ${party}`;
-  }
-  return party;
+  const artist = artistName?.trim();
+  return artist ? `[${artist}] ${party}` : party;
 }

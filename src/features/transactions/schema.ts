@@ -1,5 +1,5 @@
 import { z } from 'zod';
-import { SALE_CATEGORIES, PURCHASE_CATEGORIES } from './categories';
+import { PURCHASE_CATEGORIES, SALE_CATEGORIES } from './categories';
 
 export const transactionSchema = z.object({
   type: z.enum(['sale', 'purchase']),
@@ -7,10 +7,11 @@ export const transactionSchema = z.object({
   party: z.string().min(1, '거래처를 입력해 주세요.'),
   category: z.string().min(1, '카테고리를 선택해 주세요.'),
   artistName: z.string().optional(),
-  amount: z.number({ invalid_type_error: '금액을 입력해 주세요.' }).positive('금액은 0보다 커야 합니다.'),
-  vatRate: z.number().refine((v) => v === 0 || v === 0.1, '부가세율은 0 또는 10%여야 합니다.'),
+  songTitle: z.string().optional(),
+  amount: z.number({ invalid_type_error: '공급가액을 확인해 주세요.' }).positive('공급가액은 0보다 커야 합니다.'),
+  vatRate: z.union([z.literal(0), z.literal(0.1)]),
   vatAmount: z.number().min(0),
-  total: z.number().positive(),
+  total: z.number({ invalid_type_error: '입금/결제 금액을 입력해 주세요.' }).positive('입금/결제 금액은 0보다 커야 합니다.'),
   memo: z.string().optional(),
   deduct: z.enum(['Y', 'N']),
   currency: z.enum(['KRW', 'THB', 'USD']).optional(),

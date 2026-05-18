@@ -1,24 +1,24 @@
 import { useMemo } from 'react';
-import { useTransactionStore, selectByYear } from '@/features/transactions/store';
-import { exportSaleCSV, exportPurchaseCSV, exportVATSummaryCSV, downloadCSV } from '@/features/export/csv';
-import { exportJSON, downloadJSON } from '@/features/export/json';
-import { exportXLSX } from '@/features/export/xlsx';
 import { Button } from '@/components/ui/Button';
 import { Card } from '@/components/ui/Card';
 import { useToast } from '@/components/ui/Toast';
+import { downloadCSV, exportPurchaseCSV, exportSaleCSV, exportVATSummaryCSV } from '@/features/export/csv';
+import { downloadJSON, exportJSON } from '@/features/export/json';
+import { exportXLSX } from '@/features/export/xlsx';
+import { selectByYear, useTransactionStore } from '@/features/transactions/store';
 
 interface ExportPageProps {
   year: number;
 }
 
 export function ExportPage({ year }: ExportPageProps) {
-  const transactions = useTransactionStore((s) => s.transactions);
+  const transactions = useTransactionStore((state) => state.transactions);
   const yearTxns = useMemo(() => selectByYear(transactions, year), [transactions, year]);
   const { showToast } = useToast();
 
-  const handle = (fn: () => void, label: string) => {
+  const handle = (download: () => void, label: string) => {
     try {
-      fn();
+      download();
       showToast(`${label} 다운로드를 시작합니다.`, 'success');
     } catch {
       showToast('다운로드에 실패했습니다.', 'error');
@@ -31,7 +31,7 @@ export function ExportPage({ year }: ExportPageProps) {
       items: [
         {
           title: `THAIDAI_매입매출장부_${year}.xlsx`,
-          desc: '매출·매입·부가세요약 3개 시트 통합 워크북',
+          desc: '매출·매입·부가세 요약 3개 시트 통합 워크북',
           accent: true,
           onClick: () => handle(() => exportXLSX(yearTxns, year), 'Excel 워크북'),
         },
@@ -42,30 +42,33 @@ export function ExportPage({ year }: ExportPageProps) {
       items: [
         {
           title: '매출 CSV',
-          desc: '매출 내역 (UTF-8 BOM, 아티스트명 포함)',
+          desc: '매출 내역 (UTF-8 BOM, 아티스트명·곡명 포함)',
           accent: false,
-          onClick: () => handle(
-            () => downloadCSV(exportSaleCSV(yearTxns), `THAIDAI_매출장부_${year}.csv`),
-            '매출 CSV',
-          ),
+          onClick: () =>
+            handle(
+              () => downloadCSV(exportSaleCSV(yearTxns), `THAIDAI_매출장부_${year}.csv`),
+              '매출 CSV',
+            ),
         },
         {
           title: '매입 CSV',
           desc: '매입 내역 (UTF-8 BOM)',
           accent: false,
-          onClick: () => handle(
-            () => downloadCSV(exportPurchaseCSV(yearTxns), `THAIDAI_매입장부_${year}.csv`),
-            '매입 CSV',
-          ),
+          onClick: () =>
+            handle(
+              () => downloadCSV(exportPurchaseCSV(yearTxns), `THAIDAI_매입장부_${year}.csv`),
+              '매입 CSV',
+            ),
         },
         {
           title: '부가세 요약 CSV',
           desc: '4개 분기 납부/환급 요약',
           accent: false,
-          onClick: () => handle(
-            () => downloadCSV(exportVATSummaryCSV(yearTxns, year), `THAIDAI_부가세요약_${year}.csv`),
-            '부가세 요약 CSV',
-          ),
+          onClick: () =>
+            handle(
+              () => downloadCSV(exportVATSummaryCSV(yearTxns, year), `THAIDAI_부가세요약_${year}.csv`),
+              '부가세 요약 CSV',
+            ),
         },
       ],
     },
@@ -74,12 +77,13 @@ export function ExportPage({ year }: ExportPageProps) {
       items: [
         {
           title: 'JSON 백업',
-          desc: '전체 데이터 백업 — 나중에 복원 가능',
+          desc: '전체 데이터 백업 및 추후 복원용 파일',
           accent: false,
-          onClick: () => handle(
-            () => downloadJSON(exportJSON(yearTxns, year), `THAIDAI_백업_${year}.json`),
-            'JSON 백업',
-          ),
+          onClick: () =>
+            handle(
+              () => downloadJSON(exportJSON(yearTxns, year), `THAIDAI_백업_${year}.json`),
+              'JSON 백업',
+            ),
         },
       ],
     },
@@ -90,7 +94,7 @@ export function ExportPage({ year }: ExportPageProps) {
       <div>
         <h2 className="font-display text-2xl text-black-ink">{year}년 데이터 내보내기</h2>
         <p className="text-sm font-body text-grey-border mt-1">
-          세무대리인에게 Excel 또는 CSV로 제출하거나, JSON으로 전체 백업합니다.
+          세무대리인에게 Excel 또는 CSV로 제출하거나 JSON으로 전체 백업합니다.
         </p>
       </div>
 
@@ -125,9 +129,11 @@ export function ExportPage({ year }: ExportPageProps) {
 
       <div className="bg-cream-dark border-2 border-walnut-dark p-4">
         <p className="text-xs font-body text-walnut leading-relaxed">
-          <strong>인코딩:</strong> UTF-8 with BOM (한글 깨짐 방지)<br />
-          <strong>정렬:</strong> 거래일자 오름차순<br />
-          <strong>아티스트명:</strong> 음악 창작 거래는 [아티스트명] 컬럼 별도 포함
+          <strong>인코딩:</strong> UTF-8 with BOM (한글 깨짐 방지)
+          <br />
+          <strong>정렬:</strong> 거래일자 오름차순
+          <br />
+          <strong>음악 정보:</strong> 매출 파일에 아티스트명과 곡명 컬럼이 별도로 포함됩니다.
         </p>
       </div>
     </div>

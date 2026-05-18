@@ -3,6 +3,14 @@ import { db } from '@/lib/db';
 import type { Transaction, TransactionInput } from './types';
 import { nanoid } from './nanoid';
 
+function sortTransactions(transactions: Transaction[]): Transaction[] {
+  return [...transactions].sort((a, b) => {
+    const dateOrder = b.date.localeCompare(a.date);
+    if (dateOrder !== 0) return dateOrder;
+    return b.createdAt.localeCompare(a.createdAt);
+  });
+}
+
 interface TransactionStore {
   transactions: Transaction[];
   isLoaded: boolean;
@@ -19,7 +27,7 @@ export const useTransactionStore = create<TransactionStore>((set) => ({
 
   load: async () => {
     const all = await db.transactions.orderBy('date').reverse().toArray();
-    set({ transactions: all, isLoaded: true });
+    set({ transactions: sortTransactions(all), isLoaded: true });
   },
 
   add: async (input) => {
@@ -31,7 +39,7 @@ export const useTransactionStore = create<TransactionStore>((set) => ({
       updatedAt: now,
     };
     await db.transactions.add(tx);
-    set((s) => ({ transactions: [tx, ...s.transactions] }));
+    set((s) => ({ transactions: sortTransactions([tx, ...s.transactions]) }));
     return tx;
   },
 
@@ -39,8 +47,10 @@ export const useTransactionStore = create<TransactionStore>((set) => ({
     const now = new Date().toISOString();
     await db.transactions.update(id, { ...input, updatedAt: now });
     set((s) => ({
-      transactions: s.transactions.map((t) =>
-        t.id === id ? { ...t, ...input, updatedAt: now } : t,
+      transactions: sortTransactions(
+        s.transactions.map((t) =>
+          t.id === id ? { ...t, ...input, updatedAt: now } : t,
+        ),
       ),
     }));
   },

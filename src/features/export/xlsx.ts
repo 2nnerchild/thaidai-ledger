@@ -1,89 +1,81 @@
 import * as XLSX from 'xlsx';
+import { formatTransactionTitle } from '../transactions/categories';
 import type { Transaction } from '../transactions/types';
 import { computeAllQuartersVAT } from '../vat/calculator';
-import { formatTransactionTitle } from '../transactions/categories';
+
+function byDateAsc(a: Transaction, b: Transaction): number {
+  return a.date.localeCompare(b.date);
+}
 
 function toSaleRows(txns: Transaction[]) {
   return txns
-    .filter((t) => t.type === 'sale')
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .map((t, i) => ({
-      'No.': i + 1,
-      거래일자: t.date,
-      아티스트: t.artistName ?? '',
-      거래처: formatTransactionTitle(t.party, t.artistName),
-      카테고리: t.category,
-      적요: t.memo ?? '',
-      '공급가액(₩)': t.amount,
-      '부가세율': `${t.vatRate * 100}%`,
-      '부가세(₩)': t.vatAmount,
-      '합계(₩)': t.total,
+    .filter((transaction) => transaction.type === 'sale')
+    .sort(byDateAsc)
+    .map((transaction, index) => ({
+      'No.': index + 1,
+      거래일자: transaction.date,
+      아티스트: transaction.artistName ?? '',
+      곡명: transaction.songTitle ?? '',
+      거래처: formatTransactionTitle(transaction.party, transaction.artistName),
+      카테고리: transaction.category,
+      적요: transaction.memo ?? '',
+      '공급가액(원)': transaction.amount,
+      부가세율: `${transaction.vatRate * 100}%`,
+      '부가세(원)': transaction.vatAmount,
+      '입금총액(원)': transaction.total,
     }));
 }
 
 function toPurchaseRows(txns: Transaction[]) {
   return txns
-    .filter((t) => t.type === 'purchase')
-    .sort((a, b) => a.date.localeCompare(b.date))
-    .map((t, i) => ({
-      'No.': i + 1,
-      거래일자: t.date,
-      거래처: t.party,
-      카테고리: t.category,
-      적요: t.memo ?? '',
-      '공급가액(₩)': t.amount,
-      '부가세율': `${t.vatRate * 100}%`,
-      '부가세(₩)': t.vatAmount,
-      불공제: t.deduct === 'Y' ? '불공제' : '',
-      '합계(₩)': t.total,
+    .filter((transaction) => transaction.type === 'purchase')
+    .sort(byDateAsc)
+    .map((transaction, index) => ({
+      'No.': index + 1,
+      거래일자: transaction.date,
+      거래처: transaction.party,
+      카테고리: transaction.category,
+      적요: transaction.memo ?? '',
+      '공급가액(원)': transaction.amount,
+      부가세율: `${transaction.vatRate * 100}%`,
+      '부가세(원)': transaction.vatAmount,
+      불공제: transaction.deduct === 'Y' ? '불공제' : '',
+      '결제총액(원)': transaction.total,
     }));
 }
 
 function toVATRows(txns: Transaction[], year: number) {
-  return computeAllQuartersVAT(txns, year).map((q) => ({
-    신고구분: q.quarter,
+  return computeAllQuartersVAT(txns, year).map((quarter) => ({
+    신고구분: quarter.quarter,
     과세기간: `${year}년`,
-    '매출세액(₩)': q.salesVAT,
-    '공제매입세액(₩)': q.deductibleVAT,
-    '납부세액(₩)': q.netVAT,
-    신고기한: q.deadline,
+    '매출세액(원)': quarter.salesVAT,
+    '공제매입세액(원)': quarter.deductibleVAT,
+    '납부세액(원)': quarter.netVAT,
+    신고기한: quarter.deadline,
   }));
 }
 
-function applyHeaderStyle(ws: XLSX.WorkSheet, cols: number) {
-  const range = XLSX.utils.decode_range(ws['!ref'] ?? 'A1');
-  for (let c = 0; c <= cols - 1; c++) {
-    const cell = XLSX.utils.encode_cell({ r: 0, c });
-    if (!ws[cell]) continue;
-    ws[cell].s = {
-      font: { bold: true, color: { rgb: 'FFFFFF' } },
-      fill: { fgColor: { rgb: '1F3A5F' } },
-      alignment: { horizontal: 'center' },
-    };
-  }
-  return range;
+function applyColumnWidths(ws: XLSX.WorkSheet, widths: number[]) {
+  ws['!cols'] = widths.map((wch) => ({ wch }));
 }
 
 export function exportXLSX(txns: Transaction[], year: number): void {
-  const wb = XLSX.utils.book_new();
+  const workbook = XLSX.utils.book_new();
 
-  // 매출 시트
   const saleRows = toSaleRows(txns);
-  const wsSale = XLSX.utils.json_to_sheet(saleRows);
-  applyHeaderStyle(wsSale, Object.keys(saleRows[0] ?? {}).length);
-  XLSX.utils.book_append_sheet(wb, wsSale, '매출');
+  const saleSheet = XLSX.utils.json_to_sheet(saleRows);
+  applyColumnWidths(saleSheet, [6, 12, 16, 20, 28, 18, 28, 14, 10, 14, 14]);
+  XLSX.utils.book_append_sheet(workbook, saleSheet, '매출');
 
-  // 매입 시트
   const purchaseRows = toPurchaseRows(txns);
-  const wsPurchase = XLSX.utils.json_to_sheet(purchaseRows);
-  applyHeaderStyle(wsPurchase, Object.keys(purchaseRows[0] ?? {}).length);
-  XLSX.utils.book_append_sheet(wb, wsPurchase, '매입');
+  const purchaseSheet = XLSX.utils.json_to_sheet(purchaseRows);
+  applyColumnWidths(purchaseSheet, [6, 12, 28, 18, 28, 14, 10, 14, 10, 14]);
+  XLSX.utils.book_append_sheet(workbook, purchaseSheet, '매입');
 
-  // 부가세 요약 시트
   const vatRows = toVATRows(txns, year);
-  const wsVAT = XLSX.utils.json_to_sheet(vatRows);
-  applyHeaderStyle(wsVAT, Object.keys(vatRows[0] ?? {}).length);
-  XLSX.utils.book_append_sheet(wb, wsVAT, '부가세요약');
+  const vatSheet = XLSX.utils.json_to_sheet(vatRows);
+  applyColumnWidths(vatSheet, [12, 12, 16, 18, 16, 14]);
+  XLSX.utils.book_append_sheet(workbook, vatSheet, '부가세 요약');
 
-  XLSX.writeFile(wb, `THAIDAI_매입매출장부_${year}.xlsx`);
+  XLSX.writeFile(workbook, `THAIDAI_매입매출장부_${year}.xlsx`);
 }
