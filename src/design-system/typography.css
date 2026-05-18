@@ -1,0 +1,33 @@
+/* Display: 브랜드명, 패널 타이틀, KPI 값 */
+.text-display {
+  font-family: var(--font-display);
+  font-weight: 400;
+  letter-spacing: -0.02em;
+}
+
+/* Body */
+.text-body {
+  font-family: var(--font-body);
+  font-weight: 400;
+}
+
+/* Mono: 숫자, 통화, 메타 정보 */
+.text-mono {
+  font-family: var(--font-mono);
+  font-weight: 400;
+}
+
+/* KPI 큰 수치 */
+.text-kpi {
+  font-family: var(--font-mono);
+  font-size: clamp(1.5rem, 4vw, 2.5rem);
+  font-weight: 500;
+  letter-spacing: -0.02em;
+}
+
+/* 섹션 타이틀 */
+.text-section-title {
+  font-family: var(--font-display);
+  font-size: 1.25rem;
+  font-weight: 400;
+}

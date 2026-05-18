@@ -1,0 +1,40 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  * {
+    border-radius: 0 !important;
+  }
+
+  body {
+    @apply bg-cream text-black-ink;
+    font-family: 'IBM Plex Sans KR', sans-serif;
+  }
+}
+
+@layer utilities {
+  .font-display {
+    font-family: 'DM Serif Display', 'IBM Plex Sans KR', serif;
+  }
+
+  .font-mono {
+    font-family: 'JetBrains Mono', monospace;
+  }
+
+  .font-body {
+    font-family: 'IBM Plex Sans KR', sans-serif;
+  }
+
+  .shadow-flat {
+    box-shadow: 4px 4px 0 #3E2613;
+  }
+
+  .shadow-flat-sm {
+    box-shadow: 3px 3px 0 #3E2613;
+  }
+
+  .shadow-flat-lg {
+    box-shadow: 6px 6px 0 #3E2613;
+  }
+}

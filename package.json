@@ -1,0 +1,51 @@
+{
+  "name": "thaidai-ledger",
+  "private": true,
+  "version": "0.1.0",
+  "type": "module",
+  "description": "THAIDAI 매입매출 장부 ─ 한국 개인사업자 부가세 신고 및 매출/매입/순익 관리",
+  "scripts": {
+    "dev": "vite",
+    "build": "tsc -b && vite build",
+    "preview": "vite preview",
+    "lint": "eslint . --ext ts,tsx --report-unused-disable-directives --max-warnings 0",
+    "test": "vitest",
+    "test:ui": "vitest --ui",
+    "typecheck": "tsc --noEmit"
+  },
+  "dependencies": {
+    "@hookform/resolvers": "^3.3.4",
+    "chart.js": "^4.4.0",
+    "date-fns": "^3.3.1",
+    "dexie": "^4.0.0",
+    "dexie-react-hooks": "^1.1.7",
+    "react": "^18.3.1",
+    "react-chartjs-2": "^5.2.0",
+    "react-dom": "^18.3.1",
+    "react-hook-form": "^7.50.0",
+    "vite-plugin-pwa": "^1.3.0",
+    "workbox-window": "^7.4.1",
+    "xlsx": "^0.18.5",
+    "zod": "^3.22.4",
+    "zustand": "^4.5.0"
+  },
+  "devDependencies": {
+    "@types/react": "^18.2.55",
+    "@types/react-dom": "^18.2.19",
+    "@typescript-eslint/eslint-plugin": "^7.0.1",
+    "@typescript-eslint/parser": "^7.0.1",
+    "@vitejs/plugin-react": "^4.2.1",
+    "autoprefixer": "^10.4.17",
+    "eslint": "^8.56.0",
+    "eslint-plugin-react-hooks": "^4.6.0",
+    "eslint-plugin-react-refresh": "^0.4.5",
+    "postcss": "^8.4.35",
+    "tailwindcss": "^3.4.1",
+    "typescript": "^5.3.3",
+    "vite": "^5.1.0",
+    "vitest": "^1.2.2"
+  },
+  "engines": {
+    "node": ">=20"
+  }
+}

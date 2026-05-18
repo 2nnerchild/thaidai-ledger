@@ -1,0 +1,72 @@
+@import url('https://fonts.googleapis.com/css2?family=DM+Serif+Display&family=IBM+Plex+Sans+KR:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap');
+
+:root {
+  /* Primary palette */
+  --burnt-orange:      #C75D2C;
+  --burnt-orange-dark: #A04820;
+  --deep-blue:         #1F3A5F;
+  --deep-blue-dark:    #142640;
+  --cream:             #F5EDDC;
+  --cream-light:       #FAF5E9;
+  --cream-dark:        #E8DFC8;
+  --walnut:            #5C3A1E;
+  --walnut-dark:       #3E2613;
+
+  /* Functional */
+  --grey-border:       #8B7E6A;
+  --black-ink:         #1A1410;
+  --red-warn:          #B23A2A;
+  --green-success:     #4A6B3A;
+  --white:             #FFFFFF;
+
+  /* Typography */
+  --font-display: 'DM Serif Display', 'IBM Plex Sans KR', serif;
+  --font-body:    'IBM Plex Sans KR', sans-serif;
+  --font-mono:    'JetBrains Mono', monospace;
+
+  /* Shadows — flat offset, mid-century modern */
+  --shadow-flat:    4px 4px 0 var(--walnut-dark);
+  --shadow-flat-sm: 3px 3px 0 var(--walnut-dark);
+  --shadow-flat-lg: 6px 6px 0 var(--walnut-dark);
+
+  /* Borders */
+  --border-width: 2px;
+  --border-color: var(--walnut-dark);
+  --border: var(--border-width) solid var(--border-color);
+
+  /* Spacing */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 20px;
+  --space-6: 24px;
+  --space-8: 32px;
+  --space-10: 40px;
+  --space-12: 48px;
+
+  /* Layout */
+  --max-width: 1200px;
+  --header-height: 64px;
+  --tab-height: 52px;
+}
+
+* {
+  box-sizing: border-box;
+  border-radius: 0 !important;
+}
+
+body {
+  margin: 0;
+  padding: 0;
+  font-family: var(--font-body);
+  background-color: var(--cream);
+  color: var(--black-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 숫자는 항상 JetBrains Mono */
+.font-mono,
+[data-mono] {
+  font-family: var(--font-mono);
+}
