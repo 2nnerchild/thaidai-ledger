@@ -11,6 +11,18 @@
     @apply bg-cream text-black-ink;
     font-family: 'IBM Plex Sans KR', sans-serif;
   }
+
+  .copy-protected {
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+  }
+
+  input,
+  textarea {
+    -webkit-user-select: text;
+    user-select: text;
+  }
 }
 
 @layer utilities {

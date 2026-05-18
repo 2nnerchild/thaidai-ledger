@@ -34,3 +34,5 @@ coverage
 # Misc
 *.tsbuildinfo
 .vite
+vite.config.js
+vite.config.d.ts
